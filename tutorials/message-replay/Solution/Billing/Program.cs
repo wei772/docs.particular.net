@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Messages;
 using NServiceBus;
 
-namespace Sales
+namespace Billing
 {
-    #region SalesProgram
-
     class Program
     {
         static void Main()
@@ -15,11 +14,19 @@ namespace Sales
 
         static async Task AsyncMain()
         {
-            Console.Title = "Sales";
+            Console.Title = "Billing";
 
-            var endpointConfiguration = new EndpointConfiguration("Sales");
+            var endpointConfiguration = new EndpointConfiguration("Billing");
 
-            var transport = endpointConfiguration.UseTransport<LearningTransport>();
+            var transport = endpointConfiguration.UseTransport<MsmqTransport>();
+            endpointConfiguration.UsePersistence<InMemoryPersistence>();
+            endpointConfiguration.SendFailedMessagesTo("error");
+            endpointConfiguration.EnableInstallers();
+
+            #region BillingPubSubConfig
+            var routing = transport.Routing();
+            routing.RegisterPublisher(typeof(OrderPlaced), "Sales");
+            #endregion
 
             endpointConfiguration.UseSerialization<JsonSerializer>();
 
@@ -33,6 +40,4 @@ namespace Sales
                 .ConfigureAwait(false);
         }
     }
-
-    #endregion
 }

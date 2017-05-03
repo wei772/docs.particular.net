@@ -17,12 +17,9 @@ namespace ClientUI
 
             var endpointConfiguration = new EndpointConfiguration("ClientUI");
 
-            var transport = endpointConfiguration.UseTransport<MsmqTransport>();
+            var transport = endpointConfiguration.UseTransport<LearningTransport>();
 
             endpointConfiguration.UseSerialization<JsonSerializer>();
-            endpointConfiguration.UsePersistence<InMemoryPersistence>();
-            endpointConfiguration.SendFailedMessagesTo("error");
-            endpointConfiguration.EnableInstallers();
 
             var endpointInstance = await Endpoint.Start(endpointConfiguration)
                 .ConfigureAwait(false);

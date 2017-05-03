@@ -19,7 +19,10 @@ namespace ClientUI
 
             var endpointConfiguration = new EndpointConfiguration("ClientUI");
 
-            var transport = endpointConfiguration.UseTransport<LearningTransport>();
+            var transport = endpointConfiguration.UseTransport<MsmqTransport>();
+            endpointConfiguration.UsePersistence<InMemoryPersistence>();
+            endpointConfiguration.SendFailedMessagesTo("error");
+            endpointConfiguration.EnableInstallers();
 
             var routing = transport.Routing();
             routing.RouteToEndpoint(typeof(PlaceOrder), "Sales");
